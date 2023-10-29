@@ -67,7 +67,7 @@ void funcThreadPlayer2() {
 }
 
 void startGame() {
-    
+    // TODO
 }
 
 int main(){
