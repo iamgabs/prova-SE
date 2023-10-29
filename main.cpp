@@ -37,6 +37,7 @@ Thread player2;
 
 typedef struct jogador {
     AnalogIn y;
+    DigitalIn sw;
     int score;
 } jogador_t;
 
@@ -55,19 +56,23 @@ void imprimirTabuleiro() {
     // TODO
 }
 
-void func_thread_player1() {
+void funcThreadPlayer1() {
     // TODO
     // função que será passada como callback para a thread "player1"
 }
 
-void func_thread_player2() {
+void funcThreadPlayer2() {
     // TODO
     // função que será passada como callback para a thread "player2"
 }
 
+void startGame() {
+    
+}
+
 int main(){
-    jogador_t jogador1 = {PA_4, 0};
-    jogador_t jogador2 = {PA_1, 0};
+    jogador_t jogador1 = {PA_4, PB_0, 0};
+    jogador_t jogador2 = {PA_1, PB_0, 0};
 
     while (true) {
         imprimirTabuleiro();
