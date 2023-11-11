@@ -18,7 +18,8 @@ using namespace chrono;
 #define __use_no_semihosting
 
 // Blinking rate in milliseconds
-#define BLINKING_RATE 10ms
+//#define BLINKING_RATE 500ms
+#define BLINKING_RATE 1000ms
 
 using namespace std;
 
@@ -40,7 +41,6 @@ using namespace std;
 
 // definir reset
 #define RESET           "\033[0m"
-
 
 typedef struct jogador {
     AnalogIn y;
@@ -162,19 +162,12 @@ struct PlayersBar_t {
 struct Management_t {
     int width, height;
     int score1, score2;
-    char up1, down1, up2, down2;
-    bool quit;
     Ball_t ball;
     PlayersBar_t player1;
     PlayersBar_t player2;
 
     Management_t(int w, int h) {
         srand(time(NULL));
-        quit = false;
-        up1 = 'w';
-        up2 = 'i';
-        down1 = 's';
-        down2 = 'k';
         score1 = score2 = 0;
         width = w;
         height = h;
@@ -247,16 +240,17 @@ struct Management_t {
         int player1y = player1.y;
         int player2y = player2.y;
 
-        if(jogador1.y.read() > 0.5) {
+        //if(jogador1.y.read_u16() > 34000) {
+        if(jogador1.y.read() > 0.7) {
             player1.moveUp();
-        } else if (jogador1.y.read() < 0.5) {
+        } else if (jogador1.y.read() < 0.3) {
             player1.moveDown();
         } 
 
-        if(jogador2.y.read() > 0.5) {
-            player1.moveUp();
-        } else if (jogador2.y.read() < 0.5) {
-            player1.moveDown();
+        if(jogador2.y.read() > 0.7) {
+            player2.moveUp();
+        } else if (jogador2.y.read() < 0.3) {
+            player2.moveDown();
         }         
 
         if(ball.direction == STOP) {
@@ -321,21 +315,41 @@ struct Management_t {
     }
 };
 
-
-bool checkSW(DigitalIn sw){
-    return sw.read() != 0 ? true : false;     
-}
-
 int main(){
-    BufferedSerial pc(USBTX, USBRX, 115200);
 
-    Thread threadPlayer1;
-    Thread threadPlayer2;
+    Timer t;
+    t.start();
 
+    //BufferedSerial pc(USBTX, USBRX, 330400);
+    BufferedSerial pc(USBTX, USBRX, 144000);
+    // usbtx = pb_3
+    // usbrx = pa_10
+    // TODO implementar limete dos players para não sair do tabuleiro, ajustar colisão
     Management_t c(125, 25);
-    
+    int h = 0, v = 0;
+
+    char resultado[20];
+
+    Ticker ticker;
+
     while (true) {
-        c.start();
+
+        //c.start();
+
+        //ticker.attach(c.start, 0.2);
+
+        memset(resultado, 0, sizeof(resultado)/sizeof(resultado[0]));
+        sprintf(resultado, "\033[%d;%dH", h++, v++);
+
+        if(h > 40){
+            h = 2;
+            v = 5;
+        }
+        
+        cout << resultado;
+        cout << "A";
+
         ThisThread::sleep_for(BLINKING_RATE);
     }
 }
+
